@@ -8,15 +8,22 @@ const initServer = () => {
 
     // Default :: Home Route
     app.get('/', (c) => {
+        return c.json({
+            message: 'Welcome to Img2Cdn...',
+            timestamp: new Date().toISOString(),
+        },200);
+    });
+
+    // Whoami Route
+    app.get('/whoami', (c) => {
         const ip = c.get("client_ip");
         const geo = c.get("client_geolocation");
 
         // Return
         return c.json({
-            user: { ip, geo },
-            message: 'Welcome to Img2Cdn...',
-            timestamp: new Date().toISOString(),
-        },200);
+            ip: ip === '::1' ? '127.0.0.1' : ip,
+            geo: geo
+        }, 200);
     });
 
     // Listen On
