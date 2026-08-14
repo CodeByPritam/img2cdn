@@ -42,13 +42,21 @@ const geoResolver = (c: Context): Geolocation => {
     };
 }
 
+// Context Variable Mapping
+declare module 'hono' {
+    interface ContextVariableMap {
+        client_ip: string;
+        client_geolocation: Geolocation
+    }
+}
+
 // Export :: ({ GeoIp })
 export const GeoIP = async (c: Context, next: Next) => {
     const ip = ipResolver(c);
     const geo = geoResolver(c);
-    const geoip = [ip, geo];
 
     // Set to context
-    c.set("geo-ip", geoip);
+    c.set("client_ip", ip);
+    c.set("client_geolocation", geo);
     await next();
 }

@@ -1,15 +1,19 @@
 import { serve } from '@hono/node-server';
 import app from './src/app.js';
+import env from './src/config/env.js';
 
 // Application :: Boot
 const initServer = () => {
-    const port = Number(8000) || 8080;
-    const environment: string = 'development';
-    const prodUrl: string = 'https://img2cdn.top';
+    const port = Number(env.port) || 8080;
 
     // Default :: Home Route
     app.get('/', (c) => {
+        const ip = c.get("client_ip");
+        const geo = c.get("client_geolocation");
+
+        // Return
         return c.json({
+            user: { ip, geo },
             message: 'Welcome to Img2Cdn...',
             timestamp: new Date().toISOString(),
         },200);
@@ -18,9 +22,9 @@ const initServer = () => {
     // Listen On
     serve({ fetch: app.fetch, port: port }, (info) => {
         console.log(`Server is running On: ${
-            environment !== 'production'
+            env.environment !== 'production'
             ? `http://localhost:${info.port}`
-            : `${prodUrl}`
+            : `${env.prodUrl}`
         }`);
     });
 
