@@ -12,11 +12,11 @@ const createGroup = async (c: Context, name: string, slug: string, gid: string) 
         const folderfound = await existCommand(r2FolderName);
 
         // Return Exist
-        const missing = [!slugfound && "slug", !folderfound && "folder"].filter(Boolean);
-        if (missing.length) {
+        const conflicts = [slugfound && "db slug", folderfound && "r2 folder"].filter(Boolean);
+        if (conflicts.length) {
             return c.json({
                 success: false,
-                message: `Group with ${missing.join(", ")} already exists...`,
+                message: `Group with ${conflicts.join(", ")} already exists...`,
                 timestamp: new Date().toISOString(),
             }, 409);
         }
