@@ -1,7 +1,7 @@
 import type { Context, Handler } from 'hono';
 import crypto from 'node:crypto';
 import slugify from '../../lib/slugify.js';
-import { createGroup } from './groups.service.js';
+import { CreateGroup } from './groups.service.js';
 
 // Groups Specific Gkey
 function randomGroupId(length = 22): string {
@@ -27,7 +27,7 @@ const GroupsController: Handler = async (c: Context) => {
 
         // Getting Slug & Creating Gropus
         const finalSlug = slug ? slugify(slug) : slugify(name);
-        return createGroup(c, name, finalSlug, randomGroupId());
+        return CreateGroup(c, name, finalSlug, randomGroupId());
     }
 
 }

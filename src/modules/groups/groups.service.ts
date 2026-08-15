@@ -3,7 +3,7 @@ import { putCommand, existCommand } from '../../lib/r2-ops.js';
 import db from '../../config/db.js';
 
 // Create Groups :: Logic
-const createGroup = async (c: Context, name: string, slug: string, gid: string) => {
+const CreateGroup = async (c: Context, name: string, slug: string, gid: string) => {
 
     // Validate Inputs ({ slug optional & gid auto generated })
     const missing = [!name && "name"].filter(Boolean);
@@ -57,4 +57,4 @@ const createGroup = async (c: Context, name: string, slug: string, gid: string) 
 }
 
 // Export
-export { createGroup };
+export { CreateGroup };
