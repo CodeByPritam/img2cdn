@@ -1,11 +1,16 @@
 import type { Context, Handler } from 'hono';
+import { UploadImage } from './uploads.service.js';
 
 // Uploads Controller
 const UploadsController: Handler = async (c: Context) => {
-    return c.json({
-        message: "Hello from, uploads controller...",
-        timestamp: new Date().toISOString(),
-    }, 200);
+
+    // Upload Assets ({ POST :: /api/v1/upload })
+    if (c.req.method === 'POST') {
+        const body = await c.req.parseBody({ all: true });
+        const { gid, assets } = body;
+        return UploadImage(c, gid as string, assets);
+    }
+    
 }
 
 // Export
