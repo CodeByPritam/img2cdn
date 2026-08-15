@@ -1,11 +1,12 @@
 import type { Context } from 'hono';
 import { putCommand, existCommand } from '../../lib/r2-ops.js';
+import { generateUniqueGroupId } from './groups.utils.js';
 import db from '../../config/db.js';
 
 // Create Groups :: Logic
-const CreateGroup = async (c: Context, name: string, slug: string, gid: string) => {
+const CreateGroup = async (c: Context, name: string, slug: string) => {
 
-    // Validate Inputs ({ slug optional & gid auto generated })
+    // Validate Inputs ({ slug optional })
     const missing = [!name && "name"].filter(Boolean);
     if (missing.length) {
         return c.json({
@@ -18,6 +19,7 @@ const CreateGroup = async (c: Context, name: string, slug: string, gid: string) 
     // Normalize :: Clean slug (Extra layer) & R2 folder name 
     const cleanSlug = slug.replace(/^\/+/, '');
     const r2FolderName = `${slug}/`;
+    const gid = generateUniqueGroupId();
 
     // Main Logic
     try { 
@@ -45,7 +47,8 @@ const CreateGroup = async (c: Context, name: string, slug: string, gid: string) 
             group: { name: name, slug: cleanSlug, gid: gid },
             message: 'Group created successfully...',
             timestamp: new Date().toISOString(),
-        }, 200);
+        }, 201);
+
     } catch (error) { 
         return c.json({
             success: false,
