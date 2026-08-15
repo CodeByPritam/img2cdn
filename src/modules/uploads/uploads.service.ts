@@ -53,7 +53,7 @@ const UploadImage = async (c: Context, gid: string, role: string, file: unknown)
 
             // Upload to r2 & db
             await putCommand(r2Path, inputBuffer, leaf.type);
-            await db.query(`INSERT INTO i2c_images (linkgid, imgassetid, filename, r2key, role, mimetype, size)`,
+            await db.query(`INSERT INTO i2c_images (linkgid, imgassetid, filename, r2key, role, mimetype, size) VALUES (?, ?, ?, ?, ?, ?, ?)`,
                 [gid, uniqueAssetId(), leaf.name, r2Path, role.toLowerCase(), leaf.type, leaf.size ]
             );
 
