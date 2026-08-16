@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 
 // Generate Unique Group Id
-const generateUniqueGroupId = (length = 22): string => {
+const generateUniqueGroupId = (length = 20): string => {
     const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789';
     const alphanumeric = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 

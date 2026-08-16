@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 // Generate Unique Asset ID
-function uniqueAssetId(length = 22): string {
+function uniqueAssetId(length = 28): string {
     const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789';
     const alphanumeric = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 

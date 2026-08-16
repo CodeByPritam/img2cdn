@@ -4,11 +4,11 @@ import { uniqueAssetId, fuzzyAssetName } from './uploads.utils.js';
 import db from '../../config/db.js';
 
 // Upload Image
-const UploadImage = async (c: Context, gid: string, role: string, file: unknown) => {
+const UploadImage = async (c: Context, gid: string, role: string, kind: string, file: unknown) => {
 
     // Validate gid, role, file
     const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
-    const missing = [!gid && "group unique identifier", !role && "role", !file && "file"].filter(Boolean);
+    const missing = [!gid && "group unique identifier", !role && "role", !kind && "kind", !file && "file"].filter(Boolean);
     if (missing.length) {
         return c.json({
             success: false,
@@ -53,8 +53,8 @@ const UploadImage = async (c: Context, gid: string, role: string, file: unknown)
 
             // Upload to r2 & db
             await putCommand(r2Path, inputBuffer, leaf.type);
-            await db.query(`INSERT INTO i2c_images (linkgid, imgassetid, filename, r2key, role, mimetype, size) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                [gid, uniqueAssetId(), leaf.name, r2Path, role.toLowerCase(), leaf.type, leaf.size ]
+            await db.query(`INSERT INTO i2c_assets (linkgid, assetid, filename, r2key, role, kind, mimetype, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                [gid, uniqueAssetId(), leaf.name, r2Path, role.toLowerCase(), kind.toLowerCase(), leaf.type, leaf.size ]
             );
 
             // Return
