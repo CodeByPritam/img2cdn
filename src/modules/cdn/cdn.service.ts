@@ -1,7 +1,7 @@
 import type { Context } from 'hono';
 import { r2PublicUrl } from '../../config/storage.js';
 import db from '../../config/db.js';
-import Image from './i2c.core.js';
+import ProcessImage from './i2c.core.js';
 
 // Logic :: Internal Resolver
 const InternalResolver = async (c: Context, role: string, opts: string, aid: string) => {
@@ -17,34 +17,50 @@ const InternalResolver = async (c: Context, role: string, opts: string, aid: str
         }, 400);
     }
 
-    // Make Asset ID, DB Lookup
-    const AssetId = `AssetID-${aid.split('.')[0]}`;
-    const result = await db.query(`SELECT filename, r2key from i2c_assets WHERE assetid = ? LIMIT 1`, [AssetId]);
-    const filename = result[0].results[0].filename;
-    const r2key = result[0].results[0].r2key;
+    // Main Logic
+    try {
+        const AssetId = `AssetID-${aid.split('.')[0]}`;
+        const result = await db.query(`SELECT * from i2c_assets WHERE assetid = ? AND role = ? LIMIT 1`, [AssetId, role]);
+        
+        // Wrong Role
+        if (result[0].results.length === 0) {
+            return c.json({ 
+                success: false,
+                message: `Wrong role provided...`,
+                timestamp: new Date().toISOString(),
+            }, 200);
+        }
 
-    // Make Asset URL & Send Http Request
-    const assetUrl = `${r2PublicUrl}/${r2key}`;
-    const res = await fetch(assetUrl, { redirect: 'follow' });
+        // Get r2Key & Send Http Request
+        const r2key = result[0].results[0].r2key;
+        const res = await fetch(`${r2PublicUrl}/${r2key}`, { redirect: 'follow' });
 
-    // Get Buffer & Extract Opts
-    const inputBuffer = Buffer.from(await res.arrayBuffer());
-    const extension = filename.split('.').pop();
-    const instruction = Object.fromEntries(
-        opts.split(',').map((item) => {
-            const [key, value] = item.split('_');
-            return [key, Number(value)];
-        })
-    );
+        // Get Buffer & Extract Opts
+        const inputBuffer = Buffer.from(await res.arrayBuffer());
+        const instruction = Object.fromEntries(
+            opts.split(',').map((item) => {
+                const [key, value] = item.split(':');
+                const num = Number(value);
+                const parsed = value !== '' && !Number.isNaN(num) ? num : value;
+                return [key, parsed];
+            })
+        );
 
-    // Image Resize, Quality & Format Change Caller
-    const { output, contentType } = await Image(inputBuffer, { width: instruction.w, height: instruction.h, quality: instruction.q }, extension);
-    c.header('Content-Type', contentType);
-    c.header('Cache-Control', 'public, max-age=31536000, immutable');
-    c.header('CDN-Cache-Control', 'max-age=31536000');
+        // Process Image Caller
+        const { output, contentType } = await ProcessImage(inputBuffer, instruction);
+        c.header('Content-Type', contentType);
+        c.header('Cache-Control', 'public, max-age=31536000, immutable');
+        c.header('CDN-Cache-Control', 'max-age=31536000');
 
-    // Return
-    return c.body(Uint8Array.from(output), 200);
+        // Return
+        return c.body(Uint8Array.from(output), 200);
+    } catch (error) {
+        return c.json({
+            success: false,
+            message: 'Something went wrong!, image processing failed...',
+            timestamp: new Date().toISOString(),
+        }, 500);
+    }
 };
 
 // Export

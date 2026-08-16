@@ -15,7 +15,7 @@ app.use('*', GeoIP);
 // Mount :: Routes
 app.route('/api/v1', GroupsRouter);
 app.route('/api/v1', UploadsRouter);
-app.route('/v1', CdnRouter);
+app.route('/cdn', CdnRouter);
 
 // Export :: Application
 export default app;
