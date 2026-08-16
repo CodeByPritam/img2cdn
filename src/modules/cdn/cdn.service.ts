@@ -22,10 +22,7 @@ const InternalResolver = async (c: Context, role: string, opts: unknown, aid: st
     const r2key = result[0].results[0].r2key;
     const assetUrl = `${r2PublicUrl}/${r2key}`;
 
-
-    return c.json({
-        assetUrl
-    }, 200);
+    return c.json({ role, opts, assetUrl }, 200);
 
 };
 
