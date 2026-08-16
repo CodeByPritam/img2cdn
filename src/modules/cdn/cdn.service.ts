@@ -1,6 +1,7 @@
 import type { Context } from 'hono';
 import { r2PublicUrl } from '../../config/storage.js';
 import db from '../../config/db.js';
+import Image from './i2c.core.js';
 
 // Logic :: Internal Resolver
 const InternalResolver = async (c: Context, role: string, opts: string, aid: string) => {
@@ -18,7 +19,8 @@ const InternalResolver = async (c: Context, role: string, opts: string, aid: str
 
     // Make Asset ID, DB Lookup
     const AssetId = `AssetID-${aid.split('.')[0]}`;
-    const result = await db.query(`SELECT r2key from i2c_assets WHERE assetid = ? LIMIT 1`, [AssetId]);
+    const result = await db.query(`SELECT filename, r2key from i2c_assets WHERE assetid = ? LIMIT 1`, [AssetId]);
+    const filename = result[0].results[0].filename;
     const r2key = result[0].results[0].r2key;
 
     // Make Asset URL & Send Http Request
@@ -26,7 +28,8 @@ const InternalResolver = async (c: Context, role: string, opts: string, aid: str
     const res = await fetch(assetUrl, { redirect: 'follow' });
 
     // Get Buffer & Extract Opts
-    const buffer = Buffer.from(await res.arrayBuffer());
+    const inputBuffer = Buffer.from(await res.arrayBuffer());
+    const extension = filename.split('.').pop();
     const instruction = Object.fromEntries(
         opts.split(',').map((item) => {
             const [key, value] = item.split('_');
@@ -35,13 +38,13 @@ const InternalResolver = async (c: Context, role: string, opts: string, aid: str
     );
 
     // Image Resize, Quality & Format Change Caller
-    //const { output, ctype } = await Images();
-    //c.header('Content-Type', ctype);
-    //c.header('Cache-Control', 'public, max-age=31536000, immutable');
-    //c.header('CDN-Cache-Control', 'max-age=31536000');
+    const { output, contentType } = await Image(inputBuffer, { width: instruction.w, height: instruction.h, quality: instruction.q }, extension);
+    c.header('Content-Type', contentType);
+    c.header('Cache-Control', 'public, max-age=31536000, immutable');
+    c.header('CDN-Cache-Control', 'max-age=31536000');
 
     // Return
-    //return c.body(Uint8Array.from(output), 200);
+    return c.body(Uint8Array.from(output), 200);
 };
 
 // Export
