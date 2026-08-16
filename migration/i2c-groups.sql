@@ -1,0 +1,9 @@
+-- Create Img2Cdn Groups Table --
+CREATE TABLE IF NOT EXISTS i2c_groups (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  name TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  gid TEXT NOT NULL UNIQUE,
+  created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+  updated_at INTEGER DEFAULT NULL
+);
