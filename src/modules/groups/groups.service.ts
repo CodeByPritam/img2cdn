@@ -44,7 +44,7 @@ const CreateGroup = async (c: Context, name: string, slug: string) => {
         // Return On Success
         return c.json({
             success: true,
-            group: { name: name, slug: cleanSlug, gid: gid },
+            group: { name: name, slug: cleanSlug, inital: gid.split("-")[0], gid: gid.split("-")[1] },
             message: 'Group created successfully...',
             timestamp: new Date().toISOString(),
         }, 201);
