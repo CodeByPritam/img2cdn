@@ -2,12 +2,12 @@ import crypto from 'crypto';
 
 // Generate Unique Asset ID
 function uniqueAssetId(length = 28): string {
-    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789';
+    const lowercase = 'abcdefghijklmnopqrstuvwxyz123456789';
     const alphanumeric = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-    // First character is always uppercase
+    // First character is always lowercase
     let aid = '';
-    aid += uppercase[crypto.randomInt(uppercase.length)];
+    aid += lowercase[crypto.randomInt(lowercase.length)];
 
     // Remaining characters
     for (let i = 1; i < length; i++) { aid += alphanumeric[crypto.randomInt(alphanumeric.length)]; }
