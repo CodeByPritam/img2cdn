@@ -33,8 +33,7 @@ const UploadImage = async (c: Context, gid: string, role: string, kind: string, 
 
     // Main Logic
     try {
-        const constructedGid = `GrpID-${gid}`;
-        const groupExistInDb = await db.query(`SELECT slug FROM i2c_groups WHERE gid = ? LIMIT 1`, [constructedGid]);
+        const groupExistInDb = await db.query(`SELECT slug FROM i2c_groups WHERE gid = ? LIMIT 1`, [gid]);
         const group = groupExistInDb[0].results[0];
 
         // Group not exist
@@ -59,8 +58,8 @@ const UploadImage = async (c: Context, gid: string, role: string, kind: string, 
             );
 
             // Lookup AssetID
-            const asset = await db.query(`SELECT assetid FROM i2c_assets WHERE linkgid = ? LIMIT 1`, [constructedGid]);
-            const assetid = asset[0].results[0].assetid;
+            const alookup = await db.query(`SELECT assetid FROM i2c_assets WHERE linkgid = ? LIMIT 1`, [gid]);
+            const assetid = alookup[0].results[0].assetid;
 
             // Return
             return c.json({

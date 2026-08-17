@@ -8,7 +8,8 @@ const UploadsController: Handler = async (c: Context) => {
     if (c.req.method === 'POST') {
         const body = await c.req.parseBody({ all: true });
         const { gid, role, kind, obj } = body;
-        return await UploadImage(c, gid as string, role as string, kind as string, obj);
+        const makeGid = `GrpID-${gid}`;
+        return await UploadImage(c, makeGid as string, role as string, kind as string, obj);
     }
 
 }
