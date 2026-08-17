@@ -62,7 +62,7 @@ const SEPIA_MATRIX: [[number, number, number], [number, number, number], [number
 
 // Default Presets
 const defaultOpts: Record<string, ImageOpts> = { 
-    banner: { w: 1920, h: 1080 },
+    banner: { w: 1280, h: 720 },
     poster: { w: 600, h: 900 },
 };
 
